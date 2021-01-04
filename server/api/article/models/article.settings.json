@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "articles",
+  "info": {
+    "name": "article",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "website": {
+      "model": "website"
+    },
+    "title": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string",
+      "required": true
+    },
+    "pubDate": {
+      "type": "datetime"
+    },
+    "author": {
+      "type": "string"
+    },
+    "content": {
+      "type": "text",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "guid": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "cover": {
+      "type": "string"
+    },
+    "keywords": {
+      "collection": "keyword",
+      "via": "articles",
+      "dominant": true
+    },
+    "phrases": {
+      "collection": "phrase",
+      "via": "articles",
+      "dominant": true
+    },
+    "articles": {
+      "collection": "article",
+      "via": "recommends"
+    },
+    "recommends": {
+      "model": "article",
+      "via": "articles"
+    },
+    "count": {
+      "type": "integer",
+      "default": 0,
+      "required": true,
+      "min": 0
+    }
+  }
+}

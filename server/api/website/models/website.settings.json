@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "websites",
+  "info": {
+    "name": "website",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "rssUrl": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "status": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "websites"
+    },
+    "name": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}

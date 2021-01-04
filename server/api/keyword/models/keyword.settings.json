@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "keywords",
+  "info": {
+    "name": "keyword",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "articles": {
+      "via": "keywords",
+      "collection": "article"
+    }
+  }
+}
