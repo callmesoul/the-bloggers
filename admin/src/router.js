@@ -11,9 +11,18 @@ const router = createRouter({
       component: () => import('./views/Home.vue')
     },
     {
-      path: '/index',
-      name: 'index',
-      component: () => import('./views/Index.vue')
+      path: '/admin',
+      name: 'admin',
+      component: () => import('./layouts/BaseLayout.vue'),
+      children: [
+        { path: '/admin/website', name: 'website', component: () => import('./views/Website.vue'), meta: { title: '网站', icon: 'folder' } },
+        { path: '/admin/article', name: 'article', component: () => import('./views/Article.vue'), meta: { title: '文章', icon: 'document' } }
+      ]
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('./views/Login.vue')
     }
   ]
 })

@@ -1,6 +1,7 @@
 'use strict';
 const { sanitizeEntity } = require('strapi-utils')
-let Parser = require('rss-parser');
+const Url = require('url')
+let Parser = require('rss-parser')
 
 /**
  * Read the documentation (https://strapi.io/documentation/v3.x/concepts/controllers.html#core-controllers)
@@ -8,11 +9,21 @@ let Parser = require('rss-parser');
  */
 
 module.exports = {
+  async find(ctx) {
+    let entities 
+    if (ctx.query.all) {
+      entities = await strapi.services.website.find({ status: 2, _sort: 'created_at:desc' })
+    } else{
+      entities = await strapi.services.website.find({ ...ctx.query, user: ctx.state.user.id, _sort: 'created_at:desc' })
+    }
+    return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.website }));
+  },
   async create(ctx) {
     // 根据rssUrl 获取网站信息
     const parser = new Parser()
     const website = await parser.parseURL(ctx.request.body.rssUrl)
-    const entity = await strapi.services.website.create({ name: website.title, link: website.link, description: website.description, ...ctx.request.body })
+    const url = Url.parse(ctx.request.body.rssUrl)
+    const entity = await strapi.services.website.create({ name: website.title, link: `${url.protocol}//${url.hostname}${url.port ? ':' + url.port : ''}`, description: website.description, ...ctx.request.body, user: ctx.state.user.id })
     return sanitizeEntity(entity, { model: strapi.models.website })
   },
 

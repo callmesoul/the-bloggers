@@ -1,4 +1,5 @@
 'use strict';
+const { sanitizeEntity } = require('strapi-utils')
 const AnalysisArticle = require("../../../config/functions/analysis-article");
 
 /**
@@ -16,29 +17,37 @@ module.exports = {
       }
       return
     }
+    if (!guid || (guid && guid === '')) {
+      ctx.status = 400
+      ctx.body = {
+        msg: '请传入文章唯一标识guid字段'
+      }
+      return
+    }
     if (!limit) {
       limit = 12
     }
-
     // 异步更新对应网站状态
-    let website
-    if (guid) {
-      const article = await strapi.services.article.findOne({ guid })
-      if (article) {
-        website = await strapi.services.website.findOne({ id: article.website.id })
-      }
-    }
-    if (website) {
-      // 0 为审核 2 正常 3 rssurl 错误
-      if (website.status != 0 && website.status != 2 && website.status != 3) {
-        strapi.services.website.update({ id: website.id }, { status: 2 }).then(() => {
-          strapi.feeder.add({
-            url: website.rssUrl,
-            refresh: 60 * 1000
+    strapi.services.website.findOne({ link: ctx.request.header.origin }).then((website) => {
+      if (website) {
+        // 0 为审核 2 正常 3 rssurl 错误
+        if (website.status != 0 && website.status != 2 && website.status != 3) {
+          strapi.services.website.update({ id: website.id }, { status: 2 }).then(() => {
+            strapi.feeder.add({
+              url: website.rssUrl,
+              refresh: 60 * 1000
+            })
           })
-        })
+        }
       }
-    }
+    })
+    // if (guid) {
+    //   const article = await strapi.services.article.findOne({ guid})
+    //   if (article) {
+    //     website = await strapi.services.website.findOne({ id: article.website.id })
+    //   }
+    // }
+    
 
     
     // keywords
@@ -96,5 +105,10 @@ module.exports = {
       result = result.concat(hotArticles)
     }
     ctx.body = result
+  },
+
+  async find (ctx) {
+    const entities = await strapi.services.article.find({  _where: { 'website.user': ctx.state.user.id } })
+    return entities.map(entity => sanitizeEntity(entity, { model: strapi.models.article }));
   }
 }

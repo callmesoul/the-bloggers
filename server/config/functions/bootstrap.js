@@ -2,6 +2,7 @@
 const Queue = require("bullmq").Queue;
 const Worker = require("bullmq").Worker;
 const RssFeedEmitter = require("rss-feed-emitter");
+const Url = require('url')
 const AnalysisArticle = require("../../config/functions/analysis-article");
 
 /**
@@ -24,7 +25,7 @@ module.exports = async (ctx) => {
   // 初始化 rss 订阅
   strapi.feeder = new RssFeedEmitter();
   // 获取所有正常网站
-  const websites = await strapi.services.website.find({ status: 1 });
+  const websites = await strapi.services.website.find({ status: 2 });
   websites.forEach((website) => {
     // 把每个网站的rss地址添加到订阅
     strapi.feeder.add({
@@ -52,16 +53,17 @@ module.exports = async (ctx) => {
       console.log("addArticle");
       // 文章是否已存在
       let article = await strapi.services.article.findOne({ guid: item.guid });
-      if (!article) {
+      // 网站对应文章已存在则 return
+      if (article && article.website.rssUrl === item.meta.link) {
+        resolve()
+      } else {
         const website = await strapi.services.website.findOne({
           rssUrl: item.meta.link,
         });
-        const cover =
-          item.enclosures &&
-          item.enclosures.type &&
-          item.enclosures.type.indexOf("image") !== -1
-            ? item.enclosures.url
-            : "";
+        let cover = ''
+        if (item.enclosures && item.enclosures[0] && item.enclosures[0].type && item.enclosures[0].type.indexOf("image") !== -1) {
+          cover = item.enclosures[0].url
+        }
         // 不存在 则先插入文章
         const params = {
           title: item.title,
@@ -73,10 +75,10 @@ module.exports = async (ctx) => {
           guid: item.guid,
           author: item.author,
           categories: item.categories,
-          cover,
+          cover
         };
         article = await strapi.services.article.create(params);
-
+  
         /* 处理关键词 */
         const keywords = await AnalysisArticle.getKeywords(item.title);
         if (keywords && keywords.length > 0) {
@@ -84,14 +86,14 @@ module.exports = async (ctx) => {
             await SetArticleValue(keyword, article.id, "keyword");
           });
         }
-
+  
         //  目录分类 也作为 关键词
         if (item.categories.length > 0) {
           item.categories.forEach(async (word) => {
             await SetArticleValue(word.toLowerCase(), article.id, "keyword");
           });
         }
-
+  
         // 提取短句
         const phrases = await AnalysisArticle.getPhrases(item.description);
         if (phrases && phrases.length > 0) {
@@ -99,8 +101,8 @@ module.exports = async (ctx) => {
             await SetArticleValue(phrase, article.id, "phrase");
           });
         }
+        resolve()
       }
-      resolve();
     });
   }
 

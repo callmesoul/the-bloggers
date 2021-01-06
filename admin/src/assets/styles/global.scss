@@ -1,3 +1,4 @@
+@import './flex.scss';
 html,body{
   height: 100vh;
   margin: 0;
@@ -9,4 +10,17 @@ html,body{
   text-align: center;
   color: #2c3e50;
   height: 100vh;
+}
+.page-header{
+  border-bottom: 1px solid #eeeeee;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  .page-title{
+    font-size: 26px;
+    font-weight: bold;
+  }
+}
+
+.el-main{
+  min-height: 0;
 }

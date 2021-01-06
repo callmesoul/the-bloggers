@@ -19,7 +19,7 @@ module.exports = {
         {
           headers: {
             ...formData.getHeaders(),
-            token: "235a70781aa6419699f07e7141c568e41608535684531token",
+            token: process.env.HANLP_KEYWORD_TOKEN,
           },
         }
       );
@@ -65,11 +65,11 @@ module.exports = {
         formData.append("text", content);
         const response = await axios.post(
           "/v1/phrase/extract",
-          _formData.getBuffer(),
+          formData.getBuffer(),
           {
             headers: {
-              ..._formData.getHeaders(),
-              token: "3eeada693fb84e73a0ec43393017f04f1609233637890token",
+              ...formData.getHeaders(),
+              token: process.env.HANLP_PHRASE_TOKEN,
             },
           }
         );

@@ -9,7 +9,7 @@
       }
     },
     {
-      "method": "GET",
+      "method": "POST",
       "path": "/articles/recommend",
       "handler": "article.recommend",
       "config": {

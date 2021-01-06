@@ -33,7 +33,24 @@
       </ol>
     </div>
     <div>
-      <button>立即加入<b>The bloggers</b></button>
+      <el-button type="primary" @click="toWebsite">立即加入<b>The bloggers</b></el-button>
+      <a href="https://github.com/callmesoul/the-bloggers/issues" target="_blank">反馈建议或bug</a>
+    </div>
+
+    <div class="rule">
+      <h2>匹配规则：</h2>
+      <ol>
+        <li>关键词（文章标题提取（最多5个） + rss的category字段）</li>
+        <li>短句（从文章内容提取 5个）</li>
+        <li>通过关键词匹配 + 短句匹配</li>
+      </ol>
+    </div>
+
+    <div class="attach">
+      <h2>注意事项：</h2>
+      <ol>
+        <li>审核通过后，若网站15日内未调用过匹配接口，则网站（网站文章）将会暂时下架（将不会被匹配）</li>
+      </ol>
     </div>
 
     <div class="users">
@@ -62,7 +79,12 @@
       }
     },
     async created () {
-      this.websites = await Find()
+      this.websites = await Find({ all: true})
+    },
+    methods: {
+      toWebsite () {
+        this.$router.push('/admin/website')
+      }
     }
   }
 </script>
