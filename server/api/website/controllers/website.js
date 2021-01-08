@@ -32,23 +32,35 @@ module.exports = {
     const website = await strapi.services.website.findOne({ id })
     //  如果更新了 rssurl 要把旧的移除再加新的
     let params = ctx.request.body
-    if (params && params.rssUrl != website.rssUrl){
-      strapi.feeder.remove(website.rssUrl)
-      strapi.feeder.add({
-        url: params.rssUrl,
-        refresh: 60 * 1000
-      })
-      const parser = new Parser()
-      const res = await parser.parseURL(params.rssUrl)
-      if (res) {
-        params.name = res.title
-        params.link = res.link
-        params.description = res.description
+    const parser = new Parser()
+    const res = await parser.parseURL(params.rssUrl).catch(() => {
+      ctx.status = 400
+      return ctx.body = {
+        message: 'rssUrl 请求失败'
+      } 
+    })
+    if (res.title) {
+      params.name = res.title
+      params.link = res.link
+      params.description = res.description
+      
+      
+      if (params && params.rssUrl === website.rssUrl && website.status === 3) {
+        params.status = 1
       }
-      // 需要重新审核
-      params.status = 0
+      if (params && params.rssUrl !== website.rssUrl){
+        // 需要重新审核
+        params.status = 0
+        // 取消订阅旧 的rss
+        strapi.feeder.remove(website.rssUrl)
+      }
+      const entity = await strapi.services.website.update({ id }, params)
+      return sanitizeEntity(entity, { model: strapi.models.website });
+    } else {
+      ctx.status = 400
+      ctx.body = {
+        message: 'RSSUrl 请求失败'
+      }
     }
-    const entity = await strapi.services.website.update({ id }, params)
-    return sanitizeEntity(entity, { model: strapi.models.website });
   }
 }

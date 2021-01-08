@@ -9,7 +9,7 @@ const AnalysisArticle = require("../../../config/functions/analysis-article");
 
 module.exports = {
   async recommend (ctx) {
-    let { title, content, guid, limit } = ctx.query
+    let { title, content, guid, limit } = ctx.request.body
     if (!title || (title && title === '')) {
       ctx.status = 400
       ctx.body = {
@@ -28,15 +28,18 @@ module.exports = {
       limit = 12
     }
     // 异步更新对应网站状态
+    console.log(ctx.request.header.origin)
     strapi.services.website.findOne({ link: ctx.request.header.origin }).then((website) => {
       if (website) {
         // 0 为审核 2 正常 3 rssurl 错误
         if (website.status != 0 && website.status != 2 && website.status != 3) {
           strapi.services.website.update({ id: website.id }, { status: 2 }).then(() => {
+            console.log(strapi.feeder)
             strapi.feeder.add({
               url: website.rssUrl,
               refresh: 60 * 1000
             })
+            console.log(strapi.feeder.list)
           })
         }
       }

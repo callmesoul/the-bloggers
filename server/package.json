@@ -1,5 +1,5 @@
 {
-  "name": "smart-recommendation-articles",
+  "name": "the-bloggers",
   "private": true,
   "version": "0.1.0",
   "description": "A Strapi application",
@@ -11,10 +11,10 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "async-lock": "^1.2.6",
     "axios": "^0.21.1",
     "bullmq": "^1.12.3",
     "form-data": "^3.0.0",
+    "ioredis": "^4.19.4",
     "knex": "<0.20.0",
     "mysql": "latest",
     "rss-feed-emitter": "^3.2.2",
@@ -31,7 +31,7 @@
     "strapi-utils": "3.4.0"
   },
   "author": {
-    "name": "A Strapi developer"
+    "name": "CallMeSoul"
   },
   "strapi": {
     "uuid": "12405590-a96a-4ffd-9752-2973bf50294f"
