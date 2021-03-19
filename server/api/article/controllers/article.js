@@ -20,7 +20,7 @@ module.exports = {
     if (!guid || (guid && guid === '')) {
       ctx.status = 400
       ctx.body = {
-        msg: '请传入文章唯一标识guid字段'
+        msg: '请传入文章唯一标识guid字段',
       }
       return
     }

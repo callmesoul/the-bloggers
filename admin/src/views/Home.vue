@@ -20,8 +20,18 @@
     <div class="notice">
       <h2>使用：</h2>
       <ol>
-        <li>在<a>这里</a>自己博客的RSS地址</li>
-        <li>在自己博客文章里调用关联api，编写对应UI</li>
+        <li>点下面的“立刻加入”按钮，注册登陆</li>
+        <li>然后选网站 -> 添加: 输入网站博客的RSS地址，提交</li>
+        <li>
+          在自己博客文章页里调用关联api,并获取匹配关联的文章<br />
+          url: http://localhost:1337/articles/recommend
+          method: post
+          body: {
+            title: "文章标题必填",
+            guid: "文章唯一标识必填",
+            limit: 12,  // 获取文章关联条数 默认12
+          }
+        </li>
         <li>等待审核即可</li>
       </ol>
     </div>
